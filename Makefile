@@ -24,8 +24,11 @@ CFLAGS = -std=c23 -Wall -Wextra -Isrc -Iinclude -g3
 CFLAGS += -MMD -MP
 LDFLAGS = 
 
+# Optimize code (-O2)
 RELEASE ?= no
+# -Weverything but sane
 CODE_REVIEW ?= no
+# debug mode
 SANITIZERS ?= no
 
 ifeq ($(RELEASE), yes)
@@ -54,13 +57,19 @@ ifeq ($(SANTIZERS), yes)
 	LDFLAGS += -fsanitize=undefined,address,leak
 endif
 
+# src files
 SRC = $(wildcard src/*.c)
+# src files excluding main.c
 LIBSRC = $(filter-out src/main.c, $(SRC))
+# src/*.c -> bin/*.c
 OBJ = $(SRC:src/%.c=$(BINDIR)/%.o)
+# $(OBJ) but on $(LIBSRC)
 LIBOBJ = $(LIBSRC:src/%.c=$(BINDIR)/%.o)
+# dependencies
 DEP = $(OBJ:.o=.d)
 LIBDEP = $(LIBOBJ:.o=.d)
 
+# arguments to pass to program w/ `make test`
 TESTARGS = test/test.stac
 
 FMTFILES = $(wildcard include/*.h) $(wildcard src/*.c) $(wildcard src/*.h)
@@ -80,10 +89,12 @@ fmt:
 	@echo "going to detab, used for git"
 	./tools/detab v $(FMTFILES)
 
+# compile each single file
 $(BINDIR)/%.o: src/%.c
 	@echo "compiling $<"
 	@$(CC) -o $@ -c $< $(CFLAGS)
 
+# include deps
 -include $(DEP)
 
 build: dirs $(OBJ)
@@ -91,6 +102,7 @@ build: dirs $(OBJ)
 $(BINDIR)/$(APP): link
 
 link: build
+	@# uncomment these 3 lines if you want lib+app
 	@# @echo "linking library"
 	@# @ar rcs $(BINDIR)/$(LIBNAM)	$(LIBOBJ)
 	@# @echo "made lib $(LIBNAM)"
