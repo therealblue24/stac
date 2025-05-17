@@ -61,6 +61,14 @@ void *zcrealloc(void *ptr, size_t count, size_t size);
         exit(EXIT_FAILURE);                                                  \
     }
 
+/* todo macro */
+#define TODO(...)                              \
+    do {                                       \
+        fprintf(stderr, "TODO: " __VA_ARGS__); \
+        putchar('\n');                         \
+        exit(EXIT_FAILURE);                    \
+    } while(0);
+
 /* assert but warning */
 #define WASSERT(cond, reas, ...)                                          \
     if(!(cond)) {                                                         \
@@ -81,6 +89,7 @@ static inline size_t size_max(size_t a, size_t b)
  *     int foo;
  *     short bar;
  *     LIST(long) stuff;
+ * };
  */
 #define LIST(type)        \
     struct {              \
@@ -125,6 +134,7 @@ static inline size_t size_max(size_t a, size_t b)
         _list_append_many((l), li, sizeof(li) / sizeof(li[0])); \
     } while(0);
 
+/* Print a generic compile info/warn/err/blah. */
 void print_generic(const char *label, const char *file, size_t line, size_t col,
                    const uint8_t *src, size_t range, size_t hl_range,
                    const char *msg, ...);

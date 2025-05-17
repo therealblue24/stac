@@ -21,6 +21,7 @@ APP = stac
 
 # TODO: Switch to C11/C99
 CFLAGS = -std=c23 -Wall -Wextra -Isrc -Iinclude -g3
+CFLAGS += -MMD -MP
 LDFLAGS = 
 
 RELEASE ?= no
@@ -55,8 +56,10 @@ endif
 
 SRC = $(wildcard src/*.c)
 LIBSRC = $(filter-out src/main.c, $(SRC))
-OBJ = $(SRC:.c=.o)
-LIBOBJ = $(LIBSRC:.c=.o)
+OBJ = $(SRC:src/%.c=$(BINDIR)/%.o)
+LIBOBJ = $(LIBSRC:src/%.c=$(BINDIR)/%.o)
+DEP = $(OBJ:.o=.d)
+LIBDEP = $(LIBOBJ:.o=.d)
 
 TESTARGS = test/test.stac
 
@@ -77,9 +80,11 @@ fmt:
 	@echo "going to detab, used for git"
 	./tools/detab v $(FMTFILES)
 
-%.o: %.c
+$(BINDIR)/%.o: src/%.c
 	@echo "compiling $<"
 	@$(CC) -o $@ -c $< $(CFLAGS)
+
+-include $(DEP)
 
 build: dirs $(OBJ)
 
@@ -95,7 +100,7 @@ link: build
 
 clean:
 	@echo "cleaning"
-	@rm -rf $(OBJ) $(BINDIR)
+	rm -rf $(BINDIR)
 	@echo "cleaned"
 
 test: link

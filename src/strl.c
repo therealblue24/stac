@@ -72,7 +72,7 @@ size_t strl_parse(const uint8_t *src, uint8_t *dst, size_t size)
         }
 
         /* else we have to parse the number */
-        ASSERT(false, "TODO: Number parsing in string literals");
+        TODO("Number parsing in string literals");
     }
 
     return j;
