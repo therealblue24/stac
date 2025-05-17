@@ -1,0 +1,10 @@
+bkp
+*.o
+bin
+*.bkp
+*bkp
+tst.*
+testing
+.cache
+compile_commands.json
+.clang-format

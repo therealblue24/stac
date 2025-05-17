@@ -1,0 +1,19 @@
+func main int ptr -> int do
+    34 35 + dump
+    200 220 + dump
+    0 ret
+    // comments
+    // MORE COMMENTS!
+    /* ALL THE COMMENTS! */
+    /*
+        /*
+            /*
+                Comment-ception!
+            */
+        */
+    */
+end
+
+// HAHAHAH more comments!
+
+"cut off string lit

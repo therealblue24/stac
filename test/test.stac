@@ -1,0 +1,29 @@
+func getstr none -> str do
+	"Hello, World!" ret
+end
+
+func testing_types_keyword
+	char  uchar
+	short ushort
+	int   uint
+	long  ulong
+	/* -- */
+	str   ptr
+	none
+	intmax_t
+	uintmax_t
+	size_t
+	/* -- */
+	int8_t   uint8_t
+	int16_t  uint16_t
+	int32_t  uint32_t
+	int64_t  uint64_t
+-> int do
+	1 1 + ret
+end	
+
+func test_singleline_shenatigans int int -> int do + ret end
+
+// EOF Comment
+/* Testing /* Nested /* Comments
+ */ */ */
