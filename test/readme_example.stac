@@ -1,0 +1,8 @@
+// push 42 and 10 to the stack
+42 10
+// 42 * 10
+*
+// dump prints out to stdout
+dump
+
+0 ret  // return
