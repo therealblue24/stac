@@ -33,6 +33,10 @@ enum toktype {
     TOK_DO, /* do */
     TOK_THEN, /* do but for if loops */
     TOK_END, /* end */
+    TOK_DUP, /* dup */
+    TOK_DROP, /* drop */
+    TOK_DROPALL, /* dropall */
+    TOK_RET, /* ret */
 
     /* -- types -- */
     TOK_CHAR, /* char */
@@ -59,7 +63,12 @@ enum toktype {
     X(32),
     X(64),
 
-    TOK_ADD, /* addition */
+    /* arithmetic operators */
+    TOK_ADD,
+    TOK_SUB,
+    TOK_MUL,
+    TOK_DIV,
+
     TOK_DUMP, /* dump to stdout */
 
     /* -- number token -- */

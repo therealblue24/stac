@@ -9,6 +9,7 @@
  */
 
 #include "lex.h"
+#include "cg.h"
 #include <stdio.h>
 
 static void bar(void)
@@ -88,6 +89,11 @@ int main(int argc, char *argv[])
             break;
         }
     }
+
+    FILE *f = fopen("out.ssa", "w");
+    cg_emit(l, f);
+
+    fclose(f);
 
     free(mem);
 

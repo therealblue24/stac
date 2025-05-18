@@ -134,6 +134,12 @@ static inline size_t size_max(size_t a, size_t b)
         _list_append_many((l), li, sizeof(li) / sizeof(li[0])); \
     } while(0);
 
+/* foreach */
+#define list_foreach(l)                                             \
+    int k = 1;                                                      \
+    for(size_t it_index = 0; it_index < (l)->size; it_index++, k++) \
+        for(const typeof((l)->elems[0]) it = (l)->elems[it_index]; k; k = 0)
+
 /* Print a generic compile info/warn/err/blah. */
 void print_generic(const char *label, const char *file, size_t line, size_t col,
                    const uint8_t *src, size_t range, size_t hl_range,

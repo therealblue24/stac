@@ -70,7 +70,7 @@ DEP = $(OBJ:.o=.d)
 LIBDEP = $(LIBOBJ:.o=.d)
 
 # arguments to pass to program w/ `make test`
-TESTARGS = test/test.stac
+TESTARGS = test/add.stac
 
 FMTFILES = $(wildcard include/*.h) $(wildcard src/*.c) $(wildcard src/*.h)
 

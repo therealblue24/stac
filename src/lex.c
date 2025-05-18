@@ -12,25 +12,53 @@
 #include "util.h"
 #include <ctype.h>
 
-#define X(x) "uint" xstr(x) "_t", "int" xstr(x) "_t"
+#define X(x)                                 \
+    { "int" xstr(x) "_t", TOK_INT##x##_T },  \
+    {                                        \
+        "uint" xstr(x) "_t", TOK_UINT##x##_T \
+    }
 
-static const char *keywords[] = { "+",     "dump",   "do",       "end",
-                                  "func",  "->",     "char",     "uchar",
-                                  "short", "ushort", "int",      "uint",
-                                  "long",  "ulong",  "str",      "ptr",
-                                  "none",  "size_t", "intmax_t", "uintmax_t",
-                                  X(8),    X(16),    X(32),      X(64) };
-
-#undef X
-#define X(x) TOK_UINT##x##_T, TOK_INT##x##_T
-
-static const size_t keywordsmap[] = {
-    TOK_ADD,      TOK_DUMP,      TOK_DO,    TOK_END,    TOK_FUNC, TOK_ARROW,
-    TOK_CHAR,     TOK_UCHAR,     TOK_SHORT, TOK_USHORT, TOK_INT,  TOK_UINT,
-    TOK_LONG,     TOK_ULONG,     TOK_STR,   TOK_PTR,    TOK_NONE, TOK_SIZE_T,
-    TOK_INTMAX_T, TOK_UINTMAX_T, X(8),      X(16),      X(32),    X(64)
+struct keywordpair {
+    const char *nam;
+    const size_t map;
 };
+
+static const struct keywordpair keywords[] = {
+    { "+",         TOK_ADD       },
+    { "-",         TOK_SUB       },
+    { "*",         TOK_MUL       },
+    { "/",         TOK_DIV       },
+    { "dup",       TOK_DUP       },
+    { "drop",      TOK_DROP      },
+    { "dropall",   TOK_DROPALL   },
+    { "ret",       TOK_RET       },
+    { "dump",      TOK_DUMP      },
+    { "do",        TOK_DO        },
+    { "end",       TOK_END       },
+    { "func",      TOK_FUNC      },
+    { "->",        TOK_ARROW     },
+    { "char",      TOK_CHAR      },
+    { "uchar",     TOK_UCHAR     },
+    { "short",     TOK_SHORT     },
+    { "ushort",    TOK_USHORT    },
+    { "int",       TOK_INT       },
+    { "uint",      TOK_UINT      },
+    { "long",      TOK_LONG      },
+    { "ulong",     TOK_ULONG     },
+    { "str",       TOK_STR       },
+    { "ptr",       TOK_PTR       },
+    { "none",      TOK_NONE      },
+    { "size_t",    TOK_SIZE_T    },
+    { "intmax_t",  TOK_INTMAX_T  },
+    { "uintmax_t", TOK_UINTMAX_T },
+    X(8),
+    X(16),
+    X(32),
+    X(64)
+};
+
 #undef X
+
 static const size_t keyword_count = sizeof(keywords) / sizeof(keywords[0]);
 
 static char def_name[] = "<unknown>";
@@ -350,8 +378,8 @@ int lex_do(lex_t *lex)
 
         /* try to find keywords */
         for(size_t j = 0; j < keyword_count; j++) {
-            if(v.range == strnlen(keywords[j], 100) &&
-               strncmp((const char *)v.src, keywords[j], v.range) == 0) {
+            if(v.range == strnlen(keywords[j].nam, 100) &&
+               strncmp((const char *)v.src, keywords[j].nam, v.range) == 0) {
                 keyword_found = true;
                 keyword = j;
                 break;
@@ -361,7 +389,7 @@ int lex_do(lex_t *lex)
         /* found one? */
         if(keyword_found) {
             /* emit it */
-            int type = keywordsmap[keyword];
+            int type = keywords[keyword].map;
             token_t tok;
             /* copy over fields */
             tok.langtype = TOKL_KEYWORD;
@@ -407,6 +435,39 @@ int lex_do(lex_t *lex)
             /* append the str */
             list_append(&lex->toks, tok);
             continue;
+        }
+
+        /* negative number */
+        if(v.range >= 2 && *v.src == '-' && isdigit(v.src[1])) {
+            int64_t num = 0;
+            for(size_t k = 1; k < v.range; k++) {
+                num *= 10;
+                if(isdigit(v.src[k])) {
+                    num += v.src[k] - '0';
+                } else {
+                    /* TODO: Numbered literals */
+                    COMP_ERR(lex->name, v.line_start, v.col_start, v.src,
+                             lex->lines.elems[v.line_start] - v.col_start,
+                             v.range, "invalid numeral");
+                    return 1;
+                }
+            }
+            num = -num;
+            token_t tok;
+            /* copy over fields */
+            tok.langtype = TOKL_NUM;
+            tok.toktype = TOK_NUM_INT;
+            tok.line = v.line_start;
+            tok.col = v.col_start;
+            tok.line_end = v.line_end;
+            tok.col_end = v.col_end;
+            tok.filenam = lex->name;
+            tok.raw = v.src;
+            tok.range = v.range;
+            tok.tok_num.signd = num;
+            list_append(&lex->toks, tok);
+
+            continue; /* next possible token, please */
         }
 
         /* number */

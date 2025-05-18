@@ -1,1 +1,12 @@
-30 35 + dump
+34 35 +
+
+dup dump
+
+351 +
+dup dump
+
+42 10 * /
+dup dump
+
+1 -
+dup dump ret
