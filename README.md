@@ -1,6 +1,8 @@
 # `stac`
 Silly stack-oriented simple programming language
 
+# NOTE: being discontinued, stack programming languages are not fun to use.... i may come back to this later
+
 ## Example
 
 Currently you can do stuff like this:
